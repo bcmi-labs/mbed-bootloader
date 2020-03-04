@@ -96,11 +96,11 @@
         "ENVIE_M7": {
             "storage_tdb_internal.internal_base_address": "0x081C0000",
             "storage_tdb_internal.internal_size"        : "256*1024",
-            "update-client.application-details"         : "0x8060000",
-            "mbed-bootloader.application-start-address" : "0x8060400",
+            "update-client.application-details"         : "0x8020000",
+            "mbed-bootloader.application-start-address" : "0x8020400",
             "update-client.storage-size"                : "0xa0000",
             "mbed-bootloader.bootloader-size"           : "0x20000",
-            "target.mbed_rom_start"                     : "0x08040000"
+            "target.mbed_rom_start"                     : "0x08000000"
         }
     }
 }

@@ -40,6 +40,12 @@ const arm_uc_installer_details_t bootloader = {
     .layout   = BOOTLOADER_STORAGE_LAYOUT
 };
 
+DigitalOut usb_reset(PJ_4, 0);
+DigitalOut video_enable(PJ_2, 0);
+DigitalOut video_reset(PJ_3, 0);
+DigitalOut led(PK_6);
+I2C i2c(PB_7, PB_6);
+
 int main(void)
 {
     // this forces the linker to keep bootloader object now that it's not
@@ -53,6 +59,60 @@ int main(void)
     /*************************************************************************/
     /* Print bootloader information                                          */
     /*************************************************************************/
+    char data[2];
+
+    // LDO1 to 1.0V
+    data[0]=0x4c;
+    data[1]=0x5;
+    i2c.write(8 << 1, data, sizeof(data));
+    data[0]=0x4d;
+    data[1]=0x3;
+    i2c.write(8 << 1, data, sizeof(data));
+
+    // LDO3 to 1.2V
+    data[0]=0x52;
+    data[1]=0x9;
+    i2c.write(8 << 1, data, sizeof(data));
+    data[0]=0x53;
+    data[1]=0xF;
+    i2c.write(8 << 1, data, sizeof(data));
+
+    HAL_Delay(10);
+
+    data[0]=0x9C;
+    data[1]=(1 << 7);
+    i2c.write(8 << 1, data, sizeof(data));
+
+    // Disable charger led
+    data[0]=0x9E;
+    data[1]=(1 << 5);
+    i2c.write(8 << 1, data, sizeof(data));
+
+    HAL_Delay(10);
+
+    // SW3: set 2A as current limit
+    // Helps keeping the rail up at wifi startup
+    data[0]=0x42;
+    data[1]=(2);
+    i2c.write(8 << 1, data, sizeof(data));
+
+    HAL_Delay(10);
+
+    // Change VBUS INPUT CURRENT LIMIT to 1.5A
+    data[0]=0x94;
+    data[1]=(20 << 3);
+    i2c.write(8 << 1, data, sizeof(data));
+
+    // SW2 to 3.3V (SW2_VOLT)
+    //I2Cx_Write(8, 0x38, 9);
+    //HAL_Delay(1);
+    //I2Cx_Write(8, 0x3B, 7);
+
+    HAL_Delay(10);
+
+    usb_reset = 0;
+    HAL_Delay(10);
+    usb_reset = 1;
 
     boot_debug("\r\nMbed Bootloader\r\n");
 
