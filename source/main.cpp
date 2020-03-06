@@ -79,6 +79,10 @@ int main(void)
 
     HAL_Delay(10);
 
+    data[0]=0x35;
+    data[1]=(0);
+    i2c.write(8 << 1, data, sizeof(data));
+
     data[0]=0x9C;
     data[1]=(1 << 7);
     i2c.write(8 << 1, data, sizeof(data));
@@ -108,13 +112,8 @@ int main(void)
     //HAL_Delay(1);
     //I2Cx_Write(8, 0x3B, 7);
 
-    HAL_Delay(10);
-
-    usb_reset = 0;
-    HAL_Delay(10);
-    usb_reset = 1;
-
     boot_debug("\r\nMbed Bootloader\r\n");
+    printf("\r\nReset reason: %d\n", hal_reset_reason_get());
 
 #if MBED_CONF_MBED_TRACE_ENABLE
     mbed_trace_init();
