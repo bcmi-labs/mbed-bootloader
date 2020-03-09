@@ -108,9 +108,12 @@ int main(void)
     i2c.write(8 << 1, data, sizeof(data));
 
     // SW2 to 3.3V (SW2_VOLT)
-    //I2Cx_Write(8, 0x38, 9);
-    //HAL_Delay(1);
-    //I2Cx_Write(8, 0x3B, 7);
+    data[0]=0x38;
+    data[1]=(9);
+    i2c.write(8 << 1, data, sizeof(data));
+    data[0]=0x3b;
+    data[1]=(7);
+    i2c.write(8 << 1, data, sizeof(data));
 
     boot_debug("\r\nMbed Bootloader\r\n");
     printf("\r\nReset reason: %d\n", hal_reset_reason_get());
