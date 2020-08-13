@@ -93,7 +93,7 @@
             "update-client.storage-locations"           : 1,
             "update-client.storage-page"                : 1
         },
-        "ENVIE_M7": {
+        "PORTENTA_H7_M7": {
             "target.device_has_remove": ["USBDEVICE", "CAN"],
             "target.clock_source": "USE_PLL_HSI",
             "storage_tdb_internal.internal_base_address": "0x081C0000",
