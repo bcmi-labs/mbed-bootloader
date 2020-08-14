@@ -46,6 +46,21 @@ DigitalOut video_reset(PJ_3, 0);
 DigitalOut led(PK_6);
 I2C i2c(PB_7, PB_6);
 
+
+volatile const uint8_t bootloader_data[] __attribute__ ((section (".bootloader_version"), used)) = {
+  BOOTLOADER_CONFIG_MAGIC,
+  BOOTLOADER_VERSION,
+  CLOCK_SOURCE,
+  PORTENTA_USB_SPEED,
+  PORTENTA_HAS_ETHERNET,
+  PORTENTA_HAS_WIFI,
+  PORTENTA_RAM_SIZE,
+  PORTENTA_QSPI_SIZE,
+  PORTENTA_HAS_VIDEO,
+  PORTENTA_HAS_CRYPTO,
+  PORTENTA_EXTCLOCK,
+};
+
 int main(void)
 {
     // this forces the linker to keep bootloader object now that it's not
@@ -60,6 +75,23 @@ int main(void)
     /* Print bootloader information                                          */
     /*************************************************************************/
     char data[2];
+
+    boot_debug("\r\nMbed Bootloader\r\n");
+    printf("\r\nReset reason: %d\n", hal_reset_reason_get());
+
+    DigitalOut usb_reset(PJ_4, 0);
+    DigitalOut video_enable(PJ_2, 0);
+    DigitalOut video_reset(PJ_3, 0);
+    DigitalOut led(PK_6);
+    //DigitalOut eth_rst(PJ_15, 1);
+
+    // LDO2 to 1.8V
+    data[0]=0x4F;
+    data[1]=0x0;
+    i2c.write(8 << 1, data, sizeof(data));
+    data[0]=0x50;
+    data[1]=0xF;
+    i2c.write(8 << 1, data, sizeof(data));
 
     // LDO1 to 1.0V
     data[0]=0x4c;
@@ -77,22 +109,18 @@ int main(void)
     data[1]=0xF;
     i2c.write(8 << 1, data, sizeof(data));
 
-    HAL_Delay(10);
-
-    data[0]=0x35;
-    data[1]=(0);
-    i2c.write(8 << 1, data, sizeof(data));
+    //HAL_Delay(10);
 
     data[0]=0x9C;
     data[1]=(1 << 7);
     i2c.write(8 << 1, data, sizeof(data));
 
-    // Disable charger led
+    // Disable charger led 
     data[0]=0x9E;
     data[1]=(1 << 5);
     i2c.write(8 << 1, data, sizeof(data));
 
-    HAL_Delay(10);
+    //HAL_Delay(10);
 
     // SW3: set 2A as current limit
     // Helps keeping the rail up at wifi startup
@@ -100,20 +128,30 @@ int main(void)
     data[1]=(2);
     i2c.write(8 << 1, data, sizeof(data));
 
-    HAL_Delay(10);
+    //HAL_Delay(10);
 
     // Change VBUS INPUT CURRENT LIMIT to 1.5A
     data[0]=0x94;
     data[1]=(20 << 3);
     i2c.write(8 << 1, data, sizeof(data));
 
+    #if 1
     // SW2 to 3.3V (SW2_VOLT)
-    data[0]=0x38;
-    data[1]=(9);
+    data[0]=0x3B;
+    data[1]=0xF;
     i2c.write(8 << 1, data, sizeof(data));
-    data[0]=0x3b;
-    data[1]=(7);
+
+    // SW1 to 3.0V (SW1_VOLT)
+    data[0]=0x35;
+    data[1]=0xF;
     i2c.write(8 << 1, data, sizeof(data));
+
+    //data[0]=0x36;
+    //data[1]=(2);
+    //i2c.write(8 << 1, data, sizeof(data));
+    #endif
+
+    //HAL_Delay(10);
 
     boot_debug("\r\nMbed Bootloader\r\n");
     printf("\r\nReset reason: %d\n", hal_reset_reason_get());

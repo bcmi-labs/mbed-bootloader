@@ -40,4 +40,50 @@
 "To use pre configured profiles: mbed compile --app-config configs/<config>.json"
 #endif
 
+#define BOOTLOADER_CONFIG_MAGIC   0xA0
+#define BOOTLOADER_VERSION        15
+
+#define PORTENTA_USB_SPEED_HIGH   1
+#define PORTENTA_USB_SPEED_FULL   2
+
+#ifndef PORTENTA_USB_SPEED
+#ifdef USE_USB_HS
+#define PORTENTA_USB_SPEED    PORTENTA_USB_SPEED_HIGH
+#else
+#define PORTENTA_USB_SPEED    PORTENTA_USB_SPEED_FULL
+#endif
+#endif
+
+#define USE_PLL_HSE_EXTC     0x8  // Use external clock (ST Link MCO)
+#define USE_PLL_HSE_XTAL     0x4  // Use external xtal (X3 on board - not provided by default)
+#define USE_PLL_HSI          0x2  // Use HSI internal clock
+
+#ifndef PORTENTA_HAS_ETHERNET
+#define PORTENTA_HAS_ETHERNET   1
+#endif
+
+#ifndef PORTENTA_HAS_WIFI
+#define PORTENTA_HAS_WIFI       1
+#endif
+
+#ifndef PORTENTA_RAM_SIZE
+#define PORTENTA_RAM_SIZE       8
+#endif
+
+#ifndef PORTENTA_QSPI_SIZE
+#define PORTENTA_QSPI_SIZE      16
+#endif
+
+#ifndef PORTENTA_HAS_VIDEO
+#define PORTENTA_HAS_VIDEO      1
+#endif
+
+#ifndef PORTENTA_HAS_CRYPTO
+#define PORTENTA_HAS_CRYPTO     1
+#endif
+
+#ifndef PORTENTA_EXTCLOCK
+#define PORTENTA_EXTCLOCK       25
+#endif
+
 #endif // BOOTLOADER_CONFIG_H
